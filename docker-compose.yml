@@ -1,0 +1,48 @@
+version: '3'
+
+######### Services ###################################
+
+services:
+  # PHP FastCGI Process Manager container
+  php:
+    restart: always
+    build:
+      context: docker/dev/php
+      dockerfile: Dockerfile
+    # working_dir: /var/www/tp_sms_api
+    volumes:
+      - ./:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - mysql
+    networks:
+      - laravel
+  
+  # database container
+  mysql:
+    image: mysql:5.7.22
+    restart: always
+    environment:
+      # MYSQL_ROOT_PASSWORD: ''
+      MYSQL_DATABASE: 'tpsms'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: ''
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+    volumes:
+      - ./storage/dbdata:/var/lib/mysql
+    ports:
+      - 33066:3306
+    networks:
+      - laravel
+
+######### Volumes ###################################
+volumes:
+  database:
+    driver: local
+
+######### Networks ###################################
+networks:
+  laravel:
+    name: laravel
+    

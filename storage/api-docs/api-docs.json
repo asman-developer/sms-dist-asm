@@ -1,0 +1,179 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SMS bank api",
+        "description": "Swagger doc for sms api",
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1/",
+            "description": "SMS bank api server"
+        }
+    ],
+    "paths": {
+        "api/sms": {
+            "get": {
+                "tags": [
+                    "Create"
+                ],
+                "summary": "Create sms",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#components/schemas/CreateSMSRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "406": {
+                        "description": "Validation error"
+                    },
+                    "200": {
+                        "description": "ok"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Checkout"
+                ],
+                "summary": "Checkout sms",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#components/schemas/FetchRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "406": {
+                        "description": "Validation error"
+                    },
+                    "200": {
+                        "description": "ok",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#components/schemas/SMSModel"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "CreateRequest": {
+                "title": "CreateSMSRequest",
+                "description": "Create sms",
+                "required": [
+                    "phone",
+                    "content"
+                ],
+                "properties": {
+                    "user_phone": {
+                        "title": "user_phone",
+                        "description": "Phone number of user",
+                        "type": "integer",
+                        "example": "99362615986"
+                    },
+                    "content": {
+                        "title": "Content",
+                        "description": "Raw sms body",
+                        "type": "string",
+                        "example": "Hello world or 22333"
+                    }
+                },
+                "type": "object"
+            },
+            "FetchRequest": {
+                "title": "FetchRequest",
+                "description": "Checkout sms",
+                "required": [
+                    "phone"
+                ],
+                "properties": {
+                    "phone": {
+                        "title": "phone",
+                        "description": "11 digits phone number of user",
+                        "type": "integer",
+                        "example": "99362615986"
+                    },
+                    "sms_id": {
+                        "title": "Sms id",
+                        "description": "Sms id returned by system",
+                        "type": "integer",
+                        "example": "13335"
+                    }
+                },
+                "type": "object"
+            },
+            "SMSModel": {
+                "title": "SMSModel",
+                "description": "SMS model",
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "The internal ID",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": "1443"
+                    },
+                    "service": {
+                        "title": "Service name",
+                        "description": "Service name",
+                        "type": "string",
+                        "example": "asman_mini"
+                    },
+                    "phone": {
+                        "title": "phone",
+                        "description": "Phone number of user",
+                        "type": "integer",
+                        "example": "99362615986"
+                    },
+                    "content": {
+                        "title": "Content",
+                        "description": "Raw sms body",
+                        "type": "string",
+                        "example": "Hello world"
+                    },
+                    "created_at": {
+                        "title": "RFC3339",
+                        "description": "Created datetime sms",
+                        "type": "date-time",
+                        "example": "2020-05-11T07:35:49.00Z"
+                    },
+                    "diff_in_minutes": {
+                        "title": "DiffInMinutes",
+                        "description": "Minutes passed since created",
+                        "type": "integer",
+                        "example": "30"
+                    },
+                    "updated_at": {
+                        "title": "RFC3339",
+                        "description": "Updated datetime of payment",
+                        "type": "date-time",
+                        "example": "2020-05-11T07:35:49.00Z"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}

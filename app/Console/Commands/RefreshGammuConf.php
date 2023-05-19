@@ -28,8 +28,10 @@ class RefreshGammuConf extends Command
      */
     public function handle()
     {
-        new Process([
+        $process = new Process([
             'supervisorctl stop all && gammu-detect > ~/.gammurc && sleep 30 && supervisorctl start all'
         ]);
+        
+        $process->run();
     }
 }

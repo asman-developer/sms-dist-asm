@@ -113,6 +113,10 @@ class DistributeSMSCommand extends Command
                                     $sms->tries = $sms->tries + 1;
                                     $sms->save();
                                 });
+
+                            if(!$distribution->is_active){
+                                die();
+                            }
                         }
 
                         $poolMessages->wait();

@@ -93,40 +93,7 @@ class GammuAsyncHandleCommand extends Command
                             $sms->save();
                         });
                 }
-
-                // $pending
-                //     ->each(function($sms) use ($usbQueue, $pool, $usbList){
-                //     // $this->info("add - $sms->id");
-
-                //         if($sms->diff_in_seconds > 110 || $sms->tries >= 3) {
-                //             return;
-                //         }
-
-                //         $usbQueue = $usbQueue->isEmpty() ? $this->getUSBQueue($usbList) : $usbQueue;
-
-                //         $usbNum = $usbQueue->dequeue();
-
-                //         $smsCallback = $this->handleSMS($sms->phone, $sms->content, $usbNum);
-
-                //         $pool
-                //             ->add($smsCallback)
-                //             ->then(function ($output) use ($sms, $usbNum) {
-                //                 // executes after the command finishes
-                //                 $usbId = Usb::whereJsonContains('port_numbers', $usbNum)->first()->id;
-                //                 $sms->status = 1;
-                //                 $sms->usb_id = $usbId;
-                //                 $sms->completed_at = now();
-                //                 $sms->save();
-
-                //             })->catch(function (Throwable $exception) use ($sms, $usbNum) {
-                //                 $this->info($exception->getMessage());
-                //                 $usbId = Usb::whereJsonContains('port_numbers', $usbNum)->first()->id;
-                //                 $sms->usb_id = $usbId;
-                //                 $sms->tries = $sms->tries + 1;
-                //                 $sms->save();
-                //             });
-                // });
-
+                
                 $pool->wait();
             });
 

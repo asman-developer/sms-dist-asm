@@ -85,20 +85,15 @@ class DistributeSMSCommand extends Command
                         if ($sms->tries >= 3) {
                             continue;
                         }
-                        try{
-                            $usbNum = Arr::where($usbQueue, function ($value, $key) { return $value == 0; });
-                            Log::info("1->",$usbNum);
-                            if (!count($usbNum)){
-                                $poolMessages->wait();
-                                goto releoadChunk;
-                            }
-            
-                            Log::info("2->", $usbNum, array_keys($usbNum));
-                            $usbNum = Arr::random(array_keys($usbNum));
-                        }catch(Throwable $th){
-                            Log::info($th->getMessage());
-                            continue;
+                        
+                        $usbNum = Arr::where($usbQueue, function ($value, $key) { return $value == 0; });
+                        
+                        if (!count($usbNum)){
+                            $poolMessages->wait();
+                            goto releoadChunk;
                         }
+        
+                        $usbNum = Arr::random(array_keys($usbNum));
 
                         $usbQueue[$usbNum] = 1;
 

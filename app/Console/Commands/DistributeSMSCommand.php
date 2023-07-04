@@ -8,6 +8,7 @@ use App\Models\Usb;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Spatie\Async\Pool;
 use SplQueue;
 use Symfony\Component\Process\Process;
@@ -105,12 +106,13 @@ class DistributeSMSCommand extends Command
                                 $sms->save();
 
                                 $completeCount++;
-                            })->catch(function (Throwable $exception) use ($sms, $usbNum, $usbIds, &$usbList) {
+                            })->catch(function (Throwable $exception) use ($sms, $usbNum, $usbIds, &$usbQueue) {
                                 $sms->usb_id = $usbIds[$usbNum]->id;
                                 $sms->tries = $sms->tries + 1;
                                 $sms->save();
-                                $usbList->reject(fn($v, $k) => $v == $usbNum);
+                                unset($usbQueue[$usbNum]);
                             });
+                        Log::info($usbQueue);
 
                         if(!$distribution->is_active){
                             die();

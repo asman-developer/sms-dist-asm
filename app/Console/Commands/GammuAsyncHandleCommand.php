@@ -39,7 +39,7 @@ class GammuAsyncHandleCommand extends Command
         $tick = 0;
 
         $usbList = Service::with('usbList')
-            ->where('name', "SHOP_OTP")
+            // ->where('name', "SHOP_OTP")
             ->orWhere('name', "ASMAN_MARKET_OTP")
             ->get()
             ->pluck('usbList')

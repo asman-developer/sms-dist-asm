@@ -47,7 +47,7 @@ class DistributeSMSCommand extends Command
         $tick = 0;
 
         while ($tick < 180) {
-            try{
+            
 
             if ($this->permissionToDistribution()){
                 sleep(3600);
@@ -87,15 +87,21 @@ class DistributeSMSCommand extends Command
                         if ($sms->tries >= 3) {
                             continue;
                         }
+                        try{
+                            $usbNum = Arr::where($usbQueue, function ($value, $key) { return $value == 0; });
+                            Log::info("1->",$usbNum);
+                            if (!count($usbNum)){
+                                $poolMessages->wait();
+                                goto releoadChunk;
+                            }
+            
+                            $usbNum = Arr::random(array_keys($usbNum));
 
-                        $usbNum = Arr::where($usbQueue, function ($value, $key) { return $value == 0; });
-
-                        if (!count($usbNum)){
-                            $poolMessages->wait();
-                            goto releoadChunk;
+                            Log::info("2->",$usbNum);
+                        }catch(Throwable $th){
+                            Log::info($th->getMessage());
+                            continue;
                         }
-        
-                        $usbNum = Arr::random(array_keys($usbNum));
 
                         $usbQueue[$usbNum] = 1;
 
@@ -139,9 +145,6 @@ class DistributeSMSCommand extends Command
             }
             sleep(5);
             $tick = $tick + 5;
-            }catch(Throwable $th){
-                Log::info($th->getMessage());
-            }
         }
     }
 

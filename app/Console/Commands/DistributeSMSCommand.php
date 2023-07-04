@@ -53,7 +53,7 @@ class DistributeSMSCommand extends Command
             }
 
             $distribution = Distribution::query()
-                ->with('messages')
+                ->with(['service.usbList','messages'])
                 ->whereServiceId($serviceId)
                 ->where('state', '=', DistributionStatesEnum::PENDING)
                 ->where('start_time', '<=', now())
@@ -61,12 +61,7 @@ class DistributeSMSCommand extends Command
                 ->first();
                 
             if ($distribution != null){
-                $usbList = $distribution
-                    ->service
-                    ->usbList
-                    ->pluck('port_numbers')
-                    ->unique()
-                    ->collapse();
+                $usbList = $distribution->service->usbList;
                     // ->toArray();
 
                 $usbIds = $usbList->keyBy('port_numbers.0');

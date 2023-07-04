@@ -4,13 +4,11 @@ namespace App\Console\Commands;
 
 use App\Enums\DistributionStatesEnum;
 use App\Models\Distribution;
-use App\Models\Usb;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Spatie\Async\Pool;
-use SplQueue;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Throwable;
@@ -95,7 +93,7 @@ class DistributeSMSCommand extends Command
                                 goto releoadChunk;
                             }
             
-                            Log::info("2->",$usbNum);
+                            Log::info("2->", $usbNum, array_keys($usbNum));
                             $usbNum = Arr::random(array_keys($usbNum));
                         }catch(Throwable $th){
                             Log::info($th->getMessage());

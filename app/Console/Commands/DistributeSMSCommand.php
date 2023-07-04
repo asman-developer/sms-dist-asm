@@ -47,6 +47,7 @@ class DistributeSMSCommand extends Command
         $tick = 0;
 
         while ($tick < 180) {
+            try{
 
             if ($this->permissionToDistribution()){
                 sleep(3600);
@@ -63,7 +64,6 @@ class DistributeSMSCommand extends Command
                 
             if ($distribution != null){
                 $usbList = $distribution->service->usbList;
-                    // ->toArray();
 
                 $usbIds = $usbList->keyBy('port_numbers.0');
 
@@ -139,6 +139,9 @@ class DistributeSMSCommand extends Command
             }
             sleep(5);
             $tick = $tick + 5;
+            }catch(Throwable $th){
+                Log::info($th->getMessage());
+            }
         }
     }
 

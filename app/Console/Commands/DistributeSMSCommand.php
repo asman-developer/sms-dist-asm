@@ -7,6 +7,7 @@ use App\Models\Distribution;
 use App\Models\Usb;
 use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Support\Arr;
 use Spatie\Async\Pool;
 use SplQueue;
 use Symfony\Component\Process\Process;
@@ -65,8 +66,10 @@ class DistributeSMSCommand extends Command
                     ->usbList
                     ->pluck('port_numbers')
                     ->unique()
-                    ->collapse()
-                    ->toArray();
+                    ->collapse();
+                    // ->toArray();
+
+                $usbIds = $usbList->keyBy('port_numbers.0');
 
                 $chunkMessage = $distribution
                     ->messages()
@@ -81,53 +84,52 @@ class DistributeSMSCommand extends Command
 
                 $completeCount = $distribution->completed_count;
 
-                $chunkMessage
-                    ->each(function ($messages) use ($poolMessages, $usbQueue, $usbList, &$completeCount, &$distribution) {
-                        foreach ($messages as $sms) {
-                            if ($sms->tries >= 3) {
-                                continue;
-                            }
-
-                            $usbQueue = $usbQueue->isEmpty() ? $this->getUSBQueue($usbList) : $usbQueue;
-
-                            $usbNum = $usbQueue->dequeue();
-
-                            $smsCallback = $this->handleSMS($sms->phone, $sms->content, $usbNum);
-                            // $smsCallback  = fn () => true;
-
-                            $poolMessages
-                                ->add($smsCallback)
-                                ->then(function ($output) use ($sms, $usbNum, &$completeCount) {
-                                    // executes after the command finishes
-                                    $usbId = Usb::whereJsonContains('port_numbers', $usbNum)->first()->id;
-                                    $sms->status = 1;
-                                    $sms->usb_id = $usbId;
-                                    $sms->completed_at = now();
-                                    $sms->save();
-
-                                    $completeCount++;
-                                })->catch(function (Throwable $exception) use ($sms, $usbNum) {
-                                    $this->info($exception->getMessage());
-                                    $usbId = Usb::whereJsonContains('port_numbers', $usbNum)->first()->id;
-                                    $sms->usb_id = $usbId;
-                                    $sms->tries = $sms->tries + 1;
-                                    $sms->save();
-                                });
-
-                            if(!$distribution->is_active){
-                                die();
-                            }
+                foreach($chunkMessage as $messages){
+                    foreach ($messages as $sms) {
+                        if ($sms->tries >= 3) {
+                            continue;
                         }
 
-                        $poolMessages->wait();
+                        // $usbQueue = $usbQueue->isEmpty() ? $this->getUSBQueue($usbList) : $usbQueue;
 
-                        $distribution->completed_count = $completeCount;
-                        $distribution->save();
-                        sleep(10);
-                        if ($this->permissionToDistribution()){
+                        // $usbNum = $usbQueue->dequeue();
+                        $usbNum = $this->getEmptyUsb($usbQueue);
+
+                        $usbQueue[$usbNum] = 1;
+
+                        $smsCallback = $this->handleSMS($sms->phone, $sms->content, $usbNum);
+                        // $smsCallback  = fn () => true;
+
+                        $poolMessages
+                            ->add($smsCallback)
+                            ->then(function ($output) use ($sms, $usbNum, &$completeCount, $usbIds) {
+                                // executes after the command finishes
+                                $sms->status = 1;
+                                $sms->usb_id = $usbIds[$usbNum]->id;
+                                $sms->completed_at = now();
+                                $sms->save();
+
+                                $completeCount++;
+                            })->catch(function (Throwable $exception) use ($sms, $usbNum, $usbIds) {
+                                $sms->usb_id = $usbIds[$usbNum]->id;
+                                $sms->tries = $sms->tries + 1;
+                                $sms->save();
+                            });
+
+                        if(!$distribution->is_active){
                             die();
                         }
-                    });
+                    }
+
+                    $poolMessages->wait();
+
+                    $distribution->completed_count = $completeCount;
+                    $distribution->save();
+                    // sleep(10);
+                    if ($this->permissionToDistribution()){
+                        die();
+                    }
+                }
                 $distribution->state = DistributionStatesEnum::COMPLETED;
                 $distribution->completed_at = now();
                 $distribution->save();
@@ -185,11 +187,22 @@ class DistributeSMSCommand extends Command
         };
     }
 
-    public function getUSBQueue(array $usbList) : SplQueue {
-        $usbQueue = new SplQueue();
+    private function getEmptyUsb($usbQueue) {
+        $usbNum = Arr::where($usbQueue, function ($value, $key) { return $value == 0; });
+        
+        return Arr::random(array_keys($usbNum));
+    }
 
-        foreach($usbList as $usb) {
-            $usbQueue[] = $usb;
+    public function getUSBQueue($usbList){
+
+        $list = $usbList
+            ->pluck('port_numbers')
+            ->unique()
+            ->collapse()
+            ->shuffle();
+
+        foreach($list as $usb) {
+            $usbQueue[$usb] = 0;
         }
 
         return $usbQueue;

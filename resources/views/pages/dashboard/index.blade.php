@@ -88,15 +88,15 @@
                                 <div class="col">
                                     <div class="row">
                                     <div class="p-3 border border-dashed border-start-0 col-4">
-                                        <h5 class="mb-1"><span class="counter-value" data-target="{{ $otp_messages['total_messages'] }}">{{ $otp_messages['total_messages'] }}</span></h5>
+                                        <h5 class="mb-1"><span class="counter-value" data-target="{{ $messages['total_messages'] }}">{{ $messages['total_messages'] }}</span></h5>
                                         <p class="text-muted mb-0">{{ __('dashboard_chart_total_otp') }}</p>
                                     </div>
                                     <div class="p-3 border border-dashed border-start-0 col-4">
-                                        <h5 class="mb-1"><span class="counter-value" data-target="{{ $otp_messages['total_success_messages'] }}">{{ $otp_messages['total_success_messages'] }}</span></h5>
+                                        <h5 class="mb-1"><span class="counter-value" data-target="{{ $messages['total_success_messages'] }}">{{ $messages['total_success_messages'] }}</span></h5>
                                         <p class="text-muted mb-0">{{ __('dashboard_chart_send_total_otp') }}</p>
                                     </div>
                                     <div class="p-3 border border-dashed border-start-0 col-4">
-                                        <h5 class="mb-1"><span class="counter-value" data-target="{{ $otp_messages['total_error_messages'] }}">{{ $otp_messages['total_error_messages'] }}</span></h5>
+                                        <h5 class="mb-1"><span class="counter-value" data-target="{{ $messages['total_error_messages'] }}">{{ $messages['total_error_messages'] }}</span></h5>
                                         <p class="text-muted mb-0">{{ __('dashboard_chart_unsent_total_otp') }}</p>
                                     </div>
                                     </div>
@@ -123,8 +123,8 @@
 
         var options={
             series:[
-                {name:"{{ __('message_status_COMPLETED') }}",data:@json($otp_messages['success_data'])},
-                {name:"{{ __('message_status_PENDING') }}",data:@json($otp_messages['error_data'])},
+                {name:"{{ __('message_status_COMPLETED') }}",data:@json($messages['success_data'])},
+                {name:"{{ __('message_status_PENDING') }}",data:@json($messages['error_data'])},
             ],
             chart:{
                 type:"bar",
@@ -135,7 +135,7 @@
                 zoom:{enabled: true}
             },
             xaxis:{
-                categories:@json($otp_messages['categories'])
+                categories:@json($messages['categories'])
             }
         }
 

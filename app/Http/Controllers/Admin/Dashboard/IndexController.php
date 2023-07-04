@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Admin\Dashboard;
 
+use App\Enums\RoleEnum;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Distribution;
 use App\Models\SMS;
+use App\Models\Staff;
 use Illuminate\Support\Facades\DB;
 
 class IndexController extends Controller
@@ -15,13 +18,28 @@ class IndexController extends Controller
 
         $services = $currentStaff->services()->get();
 
-        $otp_messages = $this->getMessagesByDate($request);
+        $messages = $this->getMessagesByDate($request, $currentStaff, $services);
         
-        return view('pages.dashboard.index', compact('services', 'otp_messages'));
+        return view('pages.dashboard.index', compact('services', 'messages'));
     }
 
-    private function getMessagesByDate($request)
+    private function getMessagesByDate($request, $staff, $services)
     {
+        if($request->type != '30-day'){
+            $from = now()->startOfDay();
+            $to = now()->endOfDay();
+        } else {
+            $from = now()->subDay(30);
+            $to = now();
+        }
+
+        $distributionIds = Distribution::query()
+            ->whereBetween('created_at', [$from, $to])
+            ->whereIn('service_id', $services->pluck('id')->toArray())
+            ->get()
+            ->pluck('id')
+            ->toArray();
+
         $data = SMS::query()
             ->select([
                 DB::raw('COUNT(id) as count'),
@@ -29,20 +47,20 @@ class IndexController extends Controller
                 DB::raw('count(case when status = 0 then 1 else null end) as error_count')
             ])
             ->unless($request->type == '30-day', function($q) {
-                $from = now()->startOfDay();
-                $to = now()->endOfDay();
                 return $q
-                    ->addSelect(DB::raw("HOUR(created_at) as day"))
-                    ->whereBetween('created_at', [$from, $to]);
+                    ->addSelect(DB::raw("HOUR(created_at) as day"));
             })
             ->when($request->type == '30-day', function($q) {
-                $from = now()->subDay(30);
-                $to = now();
                 return $q
-                    ->addSelect(DB::raw("DATE(created_at) as day"))
-                    ->whereBetween('created_at', [$from, $to]);
+                    ->addSelect(DB::raw("DATE(created_at) as day"));
             })
-            ->whereNull('distribution_id')
+            ->whereBetween('created_at', [$from, $to])
+            ->when($staff->role == RoleEnum::MANAGER->value, function($q)use ($distributionIds){
+                return $q->whereIn('distribution_id', $distributionIds);
+            })
+            ->unless($staff->role == RoleEnum::MANAGER->value, function($q){
+                return $q->whereNull('distribution_id');
+            })
             ->groupBy('day')
             ->orderBy('day', 'asc')
             ->get();

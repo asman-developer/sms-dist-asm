@@ -83,8 +83,6 @@ class DistributeSMSCommand extends Command
 
                     $usbQueue = $this->getUSBQueue($usbList);
 
-                    Log::info("1->", $usbQueue, $usbList->pluck('port_numbers')->collapse()->toArray());
-
                     foreach ($messages as $sms) {
                         if ($sms->tries >= 3) {
                             continue;
@@ -125,8 +123,6 @@ class DistributeSMSCommand extends Command
                             die();
                         }
                     }
-
-                    Log::info("2->", $usbQueue, $usbList->pluck('port_numbers')->collapse()->toArray());
 
                     $poolMessages->wait();
 
@@ -193,11 +189,7 @@ class DistributeSMSCommand extends Command
             }
         };
     }
-
-    private function getEmptyUsb($usbQueue) {
-        
-    }
-
+    
     public function getUSBQueue($usbList){
         $usbQueue=null;
 

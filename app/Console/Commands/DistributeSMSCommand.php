@@ -109,7 +109,7 @@ class DistributeSMSCommand extends Command
                                 $sms->save();
 
                                 $completeCount++;
-                            })->catch(function (Throwable $exception) use ($sms, $usbNum, $usbIds, $usbList) {
+                            })->catch(function (Throwable $exception) use ($sms, $usbNum, $usbIds, &$usbList) {
                                 $sms->usb_id = $usbIds[$usbNum]->id;
                                 $sms->tries = $sms->tries + 1;
                                 $sms->save();

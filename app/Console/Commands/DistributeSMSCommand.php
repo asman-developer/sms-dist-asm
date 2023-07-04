@@ -67,16 +67,17 @@ class DistributeSMSCommand extends Command
 
                 $usbIds = $usbList->keyBy('port_numbers.0');
 
-                $chunkMessage = $distribution
-                    ->messages()
-                    ->whereStatus(0)
-                    ->orderBy('id', 'desc')
-                    ->get()
-                    ->chunk(count($usbList));
-
                 $poolMessages = Pool::create()->concurrency(count($usbList));
 
                 $completeCount = $distribution->completed_count;
+
+                releoadChunk:
+                    $chunkMessage = $distribution
+                        ->messages()
+                        ->whereStatus(0)
+                        ->orderBy('id', 'desc')
+                        ->get()
+                        ->chunk(count($usbList));
 
                 foreach($chunkMessage as $messages){
 
@@ -89,7 +90,14 @@ class DistributeSMSCommand extends Command
                             continue;
                         }
 
-                        $usbNum = $this->getEmptyUsb($usbQueue);
+                        $usbNum = Arr::where($usbQueue, function ($value, $key) { return $value == 0; });
+
+                        if (!count($usbNum)){
+                            $poolMessages->wait();
+                            goto releoadChunk;
+                        }
+        
+                        $usbNum = Arr::random(array_keys($usbNum));
 
                         $usbQueue[$usbNum] = 1;
 
@@ -187,9 +195,7 @@ class DistributeSMSCommand extends Command
     }
 
     private function getEmptyUsb($usbQueue) {
-        $usbNum = Arr::where($usbQueue, function ($value, $key) { return $value == 0; });
         
-        return Arr::random(array_keys($usbNum));
     }
 
     public function getUSBQueue($usbList){

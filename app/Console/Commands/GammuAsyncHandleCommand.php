@@ -273,6 +273,7 @@ class GammuAsyncHandleCommand extends Command
 //     }
 
 //     public function getUSBQueue($usbList){
+//         $usbQueue=null;
 
 //         $list = $usbList
 //             ->pluck('port_numbers')

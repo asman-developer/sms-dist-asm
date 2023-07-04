@@ -95,9 +95,8 @@ class DistributeSMSCommand extends Command
                                 goto releoadChunk;
                             }
             
-                            $usbNum = Arr::random(array_keys($usbNum));
-
                             Log::info("2->",$usbNum);
+                            $usbNum = Arr::random(array_keys($usbNum));
                         }catch(Throwable $th){
                             Log::info($th->getMessage());
                             continue;

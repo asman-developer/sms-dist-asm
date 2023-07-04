@@ -113,7 +113,7 @@ class DistributeSMSCommand extends Command
                                 $sms->usb_id = $usbIds[$usbNum]->id;
                                 $sms->tries = $sms->tries + 1;
                                 $sms->save();
-                                $usbList->reject(fn($v, $k) => $v == $usbNum);
+                                $usbList->reject(fn($v, $k) => $v->id == $usbIds[$usbNum]->id);
                             });
 
                         if(!$distribution->is_active){

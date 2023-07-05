@@ -82,7 +82,7 @@ class DistributeSMSCommand extends Command
                     $usbQueue = $this->getUSBQueue($usbList);
 
                     foreach ($messages as $sms) {
-                        if(!$distribution->is_active){
+                        if(!Distribution::query()->find($distribution->id)->is_active){
                             die();
                         }
                         if ($sms->tries >= 3) {

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\SMSFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -71,6 +72,11 @@ class SMS extends Model
     protected $table = 'sms';
 
     protected $guarded = [];
+
+    protected static function newFactory(): SMSFactory
+    {
+        return SMSFactory::new();
+    }
 
     // protected $appends = ['diff_in_minutes'];
 

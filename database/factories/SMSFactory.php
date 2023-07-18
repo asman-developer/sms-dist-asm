@@ -13,7 +13,7 @@ class SMSFactory extends Factory
     {
         return [
             'service_id' => 2,
-            'phone' => $this->faker->randomElement([99365657369, 99362615986]),
+            'phone' => $this->faker->randomElement([99365657369, 99362615986, 99362624628]),
             'content' => $this->faker->text(10)
         ];
     }

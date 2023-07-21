@@ -12,6 +12,7 @@ class DeleteController extends Controller
 {
     public function __invoke(Request $request)
     {
+        abort(404);
         $staff = currentStaff();
 
         $distribution = Distribution::query()->findOrFail($request->id);

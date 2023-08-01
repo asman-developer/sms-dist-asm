@@ -210,6 +210,8 @@ class GammuAsyncHandleCommand extends Command
 
             $pool = Pool::create()->concurrency(count($usbList));
 
+            $pool->autoload('vendor/autoload.php');
+
             releoadChunk:
                 $chunked = SMS::whereStatus(0)
                     ->whereNull('distribution_id')

@@ -249,11 +249,11 @@ class GammuAsyncHandleCommand extends Command
                             $sms->completed_at = now();
                             $sms->save();
                         })->catch(function (Throwable $exception) use ($sms, $usbNum, $usbIds, &$usbList) {
+                            Log::info($exception->getMessage());
                             $sms->usb_id = $usbIds[$usbNum]->id;
                             $sms->tries = $sms->tries + 1;
                             $sms->save();
                             $usbList = $usbList->reject(fn($v, $k) => $v->id == $usbIds[$usbNum]->id);
-                            throw $exception;
                         });
                 }
                 

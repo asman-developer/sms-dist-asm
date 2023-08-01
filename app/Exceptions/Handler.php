@@ -34,7 +34,7 @@ class Handler extends ExceptionHandler
             if ($e instanceof NotFoundHttpException) {
                 return false;
             }
-            toErrors($e);
+            // toErrors($e);
         });
     }
 

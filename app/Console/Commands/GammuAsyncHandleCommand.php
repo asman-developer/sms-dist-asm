@@ -170,6 +170,7 @@ use App\Models\Service;
 use App\Models\SMS;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 use Spatie\Async\Pool;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -201,11 +202,7 @@ class GammuAsyncHandleCommand extends Command
         $s = 180;
         $tick = 0;
 
-        $usbList = Service::with('usbList')
-            ->where('name', "ASMAN_MARKET_OTP")
-            ->get()
-            ->pluck('usbList')
-            ->collapse();
+        $usbList = Service::with('usbList')->where('name', "ASMAN_MARKET_OTP")->get()->pluck('usbList')->collapse();
 
         $usbIds = $usbList->keyBy('port_numbers.0');
 
@@ -252,7 +249,7 @@ class GammuAsyncHandleCommand extends Command
                             $sms->completed_at = now();
                             $sms->save();
                         })->catch(function (Throwable $exception) use ($sms, $usbNum, $usbIds, &$usbList) {
-                            $this->info($exception->getMessage());
+                            Log::info($exception->getMessage());
                             $sms->usb_id = $usbIds[$usbNum]->id;
                             $sms->tries = $sms->tries + 1;
                             $sms->save();

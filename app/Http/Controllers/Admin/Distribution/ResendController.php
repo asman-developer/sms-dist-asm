@@ -28,6 +28,11 @@ class ResendController extends Controller
         if ($request->type == 'unsent'){
             $distribution->state = DistributionStatesEnum::PENDING;
             $distribution->save();
+
+            SMS::query()
+                ->where('distribution_id', $distribution->id)
+                ->whereStatus(0)
+                ->update(['status' => 0, 'tries' => 0]);
         }
 
         return redirect()->back()->with('success');

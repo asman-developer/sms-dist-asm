@@ -22,7 +22,7 @@ class ResendController extends Controller
 
             SMS::query()
                 ->where('distribution_id', $distribution->id)
-                ->update(['status' => 0]);
+                ->update(['status' => 0, 'tries' => 0]);
         }
 
         if ($request->type == 'unsent'){

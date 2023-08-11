@@ -37,6 +37,9 @@
 
 
     <div class="card-body">
+        @if ($errors->any())
+            {{ 'ez' }}
+        @endif
         <livewire:distributions.list-distribution />
     </div><!-- end card-body -->
     <div class="card-footer">

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin\Distribution;
 
-use App\Enums\DistributionStatesEnum;
 use App\Enums\RoleEnum;
 use App\Models\Distribution;
 use Illuminate\Http\Request;

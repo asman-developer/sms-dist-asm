@@ -38,7 +38,11 @@
 
     <div class="card-body">
         @if ($errors->any())
-            {{ 'ez' }}
+        <div class="alert alert-danger alert-border-left alert-dismissible fade show" role="alert">
+            <i class="ri-notification-off-line me-3 align-middle"></i> <strong>Error</strong>
+            {{ __(session()->get('fail')) }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         @endif
         <livewire:distributions.list-distribution />
     </div><!-- end card-body -->

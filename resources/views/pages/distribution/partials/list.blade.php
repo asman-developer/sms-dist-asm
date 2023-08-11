@@ -40,7 +40,7 @@
         @if ($errors->any())
         <div class="alert alert-danger alert-border-left alert-dismissible fade show" role="alert">
             <i class="ri-notification-off-line me-3 align-middle"></i> <strong>Error</strong>
-            {{ __(session()->get('fail')) }}
+            {{ $errors->first() }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif

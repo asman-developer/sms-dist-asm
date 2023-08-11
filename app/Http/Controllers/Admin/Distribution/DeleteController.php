@@ -17,7 +17,7 @@ class DeleteController extends Controller
         $distribution = Distribution::query()->findOrFail($request->id);
 
         if ($staff->role == RoleEnum::MANAGER->value){
-            return redirect()->back()->withErrors(['error' => "fuck you!"]);
+            return redirect()->back()->withErrors(['error' => "Fuck you {$staff->firstname}!"]);
         }
 
         $distribution->delete();

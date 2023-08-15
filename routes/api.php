@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\SMS\SendCodeController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +24,5 @@ Route::group([
     Route::post('sms', 'CreateController')->name('sms.create');
     Route::get('sms', 'FetchController')->name('sms.fetch');
 });
+
+Route::get('send/code', SendCodeController::class);

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\SendSMSJob;
 use App\Models\SMS;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
@@ -40,11 +41,13 @@ class GetCustomersOtpCommand extends Command
                 ->exists();
 
             if (!$prepare){
-                SMS::create([                
+                $sms = SMS::create([                
                     'service_id'    => 3,
                     'phone'         => $data['phone'],
                     'content'       => $data['otp'],
                 ]);
+                
+                SendSMSJob::dispatch($sms);
             }
         }
     }

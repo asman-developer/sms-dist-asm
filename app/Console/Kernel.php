@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('gammu:send:balance')->everyFiveMinutes();
 //         $schedule->command('app:sms:bomb')->everyMinute();
         // $schedule->command('refresh:gammu:conf')->everySixHours();
-        $schedule->command('get:customers:otp')->everyMinute();
+        // $schedule->command('get:customers:otp')->everyMinute();
     }
 
     /**

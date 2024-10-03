@@ -48,7 +48,9 @@ class IndexController extends Controller
             ])
             ->unless($request->type == '30-day', function($q) {
                 return $q
-                    ->addSelect(DB::raw("HOUR(created_at) as day"));
+                    // ->addSelect(DB::raw("HOUR(created_at) as day"));
+                    ->addSelect(DB::raw("EXTRACT(HOUR FROM created_at) as day")); // HOUR() yerine EXTRACT() kullanıldı
+
             })
             ->when($request->type == '30-day', function($q) {
                 return $q

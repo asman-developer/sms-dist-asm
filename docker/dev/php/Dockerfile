@@ -16,4 +16,4 @@ WORKDIR /app
 # RUN php artisan migrate
 
 CMD php artisan serve --host=0.0.0.0
-EXPOSE 8000
+EXPOSE 8000 
